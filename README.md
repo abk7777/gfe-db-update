@@ -17,7 +17,6 @@ Infrastructure definition of the data pipeline to update `gfe-db`.
     - [Creating a Python Virtual Environment](#creating-a-python-virtual-environment)
       - [Adding a kernel spec to Jupyter Notebook](#adding-a-kernel-spec-to-jupyter-notebook)
     - [Environment Variables](#environment-variables)
-    - [Additional Instructions](#additional-instructions)
   - [Usage](#usage)
   - [Running Tests](#running-tests)
   - [Deployment](#deployment)
@@ -49,19 +48,6 @@ This service ingests quarterly updates to the IPD-IMGT/HLA database into a data 
 
 #### `build-service.yml`
 Deploys an EC2, EBS volume and security group. The EC2 instance downloads data from https://github.com/ANHIG/IMGTHLA, builds a set of CSVs for the given release, and stores them in S3. A Lambda function destroys the instance and EBS volume when the build is complete.
-
-To deploy, run the command.
-```bash
-aws cloudformation deploy \
-  --template-file cfn/build-service.yml \
-  --stack-name gfe-db-update-build
-```
-
-To delete, run the command.
-```bash
-aws cloudformation delete-stack \
-  --stack-name gfe-db-update-build
-```
 
 ## Installation
 
@@ -116,35 +102,36 @@ VARIABLE3=<value>
 
 *Important:* Always use a `.env` file or AWS SSM Parameter Store for sensitive variables like credentials and API keys. Never hard-code them, including when developing. AWS will quarantine an account if any credentials get accidentally exposed and this will cause problems.
 
-### Additional Instructions
-*Include additional instructions for creating the environment the application needs.*
-
 ## Usage
-The next section is usage, in which you instruct other people on how to use your project after they’ve installed it and created the environment. This is where code blocks `docker run`, `python3 my_script.py`, or `bash run.sh` can go. Make sure to describe what the step is and give the command.
-
 ```bash
 # Example usage
 python3 my_script.py
 ```
 
 ## Running Tests
-Include code blocks to show how to test the project.
 
 ## Deployment
-Include instructions for deployment to AWS.
+To deploy, run the command.
+```bash
+aws cloudformation deploy \
+  --template-file cfn/build-service.yml \
+  --stack-name gfe-db-update-build
+```
 
 ## Clean Up
-*Include code blocks that show how to tear down the project. This is important for developers working on their local machine with tools like Docker, or for tearing cloud infrastructure used for development.*
+To delete, run the command.
+```bash
+aws cloudformation delete-stack \
+  --stack-name gfe-db-update-build
+```
 
 ## Authors
-List developers who have contributed to the repository. Make sure to update for if personnel change.
-
-**Primary Contact:** Gregory Lindsey ([@abk7777](https://github.com/abk7777)) \
-**Contributor:** First name Last name ([@username](https://github.com/username))
+**Primary Contact:** Gregory Lindsey ([@abk7777](https://github.com/abk7777))
 
 ## References & Links
-* This information was originally found in [GitHub Guides](https://guides.github.com/features/wikis/).
-* More examples of [GitHub markdown](https://gist.github.com/stevenyap/7038119)
+* [gfe-db](https://github.com/nmdp-bioinformatics/gfe-db)
+* [GFE Introduction](https://github.com/nmdp-bioinformatics/GFE/wiki/GFE-Introduction)
+* [A GENE FEATURE ENUMERATION APPROACH FOR DESCRIBING HLA ALLELE POLYMORPHISM](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4674356/)
 
 -----------------
 <br>
