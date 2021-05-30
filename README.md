@@ -42,6 +42,8 @@ This service ingests quarterly updates to the IPD-IMGT/HLA database into a data 
 3. The build server downloads and parses the data to create a set of CSV files that describe GFEs and their relationships. The CSVs are stored as artifacts in S3.
 4. An S3 notification triggers a Lambda to terminate the build server and delete the EBS volume.
 5. Another S3 notification triggers a Lambda to update Neo4j from the newly created CSV files.
+
+
 ![gfe-db-architecture](img/gfe-db-arch-v210529.png)
 
 ### CloudFormation Templates
