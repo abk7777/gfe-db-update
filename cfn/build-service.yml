@@ -12,9 +12,9 @@ Parameters:
   gfeVPC:
     Type: String
     Default: vpc-8a3d74f0
-  gfedbRepo:
-    Type: String
-    Default: https://github.com/abk7777/gfe-db.git
+  # gfedbRepo:
+  #   Type: String
+  #   Default: https://github.com/abk7777/gfe-db.git
 Resources: 
   gfedbBuildSG:
     Type: AWS::EC2::SecurityGroup
@@ -38,31 +38,35 @@ Resources:
       SecurityGroupIds:
         - !Ref gfedbBuildSG
       UserData:
-        Fn::Base64: ### See if this script works
-          !Sub |
-            #!/bin/bash -x
-            IDX=1
-            for DEV in /dev/disk/by-id/nvme-Amazon_EC2_NVMe_Instance_Storage_*-ns-1; do
-              mkfs.xfs ${DEV}
-              mkdir -p /local${IDX}
-              echo ${DEV} /local${IDX} xfs defaults,noatime 1 2 >> /etc/fstab
-              IDX=$((${IDX} + 1))
-            done
-            mount -a
-            chmod 777 /local1
-            cd /local1
-            sudo yum update -y
-            sudo yum install git -y
-            git clone ${gfedbRepo}
-            cd gfe-db
-            python3.8 -m venv .venv
-            source .venv/bin/activate
-            pip install -U pip
-            pip install -r requirements.txt
-            export RELEASES="3420, 3430"
-            export ALIGN=True
-            export KIR=False
-            export MEM_PROFILE=False
+        Fn::Base64: |
+          #!/bin/bash -x
+          IDX=1
+          for DEV in /dev/disk/by-id/nvme-Amazon_EC2_NVMe_Instance_Storage_*-ns-1; do
+            mkfs.xfs ${DEV}
+            mkdir -p /local${IDX}
+            echo ${DEV} /local${IDX} xfs defaults,noatime 1 2 >> /etc/fstab
+            IDX=$((${IDX} + 1))
+          done
+          mount -a
+          sudo yum update -y
+          sudo amazon-linux-extras install python3.8
+          sudo yum install git -y
+          # chmod 777 /local1
+          cd /local1
+          echo "User: $USER"
+          chown -R ec2-user .
+          git clone https://github.com/abk7777/gfe-db.git
+          cd gfe-db
+          git checkout fix/optimize-build 
+          python3.8 -m venv .venv
+          source .venv/bin/activate
+          pip install -U pip
+          pip install -r requirements.txt
+          export RELEASES="3420, 3430"
+          export ALIGN=True
+          export KIR=False
+          export MEM_PROFILE=False
+          bash bin/build.sh 500
       Tags:
         - Key: Name
           Value: gfe-build

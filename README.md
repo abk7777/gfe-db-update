@@ -18,6 +18,7 @@ Infrastructure definition of the data pipeline to update `gfe-db`.
       - [Adding a kernel spec to Jupyter Notebook](#adding-a-kernel-spec-to-jupyter-notebook)
     - [Environment Variables](#environment-variables)
   - [Usage](#usage)
+    - [Check Userdata Logs](#check-userdata-logs)
   - [Running Tests](#running-tests)
   - [Deployment](#deployment)
   - [Clean Up](#clean-up)
@@ -108,6 +109,10 @@ VARIABLE3=<value>
 ```bash
 # Example usage
 python3 my_script.py
+```
+### Check Userdata Logs
+```bash
+sudo less /var/log/cloud-init-output.log
 ```
 
 ## Running Tests
