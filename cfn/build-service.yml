@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: Build service for GFE database
-Parameters: 
+Parameters:
   gfedbBuildKeyName:
     Type: String
     Default: gfe-build-service
@@ -15,7 +15,10 @@ Parameters:
   # gfedbRepo:
   #   Type: String
   #   Default: https://github.com/abk7777/gfe-db.git
-Resources: 
+  gfeBucketArn:
+    Type: String
+    Default: "arn:aws:s3:::gfe-db-4498"
+Resources:
   gfedbBuildSG:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -23,10 +26,10 @@ Resources:
       GroupDescription: Security group for the GFE DB build server
       VpcId: !Ref gfeVPC
       SecurityGroupIngress:
-      - CidrIp: 0.0.0.0/0
-        FromPort: 22
-        IpProtocol: tcp
-        ToPort: 22
+        - CidrIp: 0.0.0.0/0
+          FromPort: 22
+          IpProtocol: tcp
+          ToPort: 22
   gfedbBuildServer:
     Type: AWS::EC2::Instance
     Properties:
@@ -34,6 +37,7 @@ Resources:
       DisableApiTermination: false
       ImageId: !Ref gfedbBuildImageId
       InstanceType: c5d.large
+      IamInstanceProfile: !Ref gfedbBuildProfile
       Monitoring: true
       SecurityGroupIds:
         - !Ref gfedbBuildSG
@@ -51,9 +55,7 @@ Resources:
           sudo yum update -y
           sudo amazon-linux-extras install python3.8
           sudo yum install git -y
-          # chmod 777 /local1
           cd /local1
-          echo "User: $USER"
           chown -R ec2-user .
           git clone https://github.com/abk7777/gfe-db.git
           cd gfe-db
@@ -66,10 +68,44 @@ Resources:
           export ALIGN=True
           export KIR=False
           export MEM_PROFILE=False
-          bash bin/build.sh 500
+          bash bin/build.sh 100
       Tags:
         - Key: Name
-          Value: gfe-build
+          Value: gfedb-build
+  gfedbBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - "sts:AssumeRole"
+      Path: /
+      Policies:
+        - PolicyName: gfedbS3Write
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "s3:ListObjects"
+                  - "s3:PutObject"
+                  - "s3:PutObjectAcl"
+                Resource: 
+                  - !Ref gfeBucketArn
+                  - !Join
+                    - ""
+                    - - !Ref gfeBucketArn
+                      - "/data/*/csv/*"
+  gfedbBuildProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref gfedbBuildRole
 Outputs:
   gfedbBuildServerPublicDNS:
     Description: Public DNS for SSH access into the build server
