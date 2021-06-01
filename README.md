@@ -31,7 +31,8 @@ Infrastructure definition of the data pipeline to update `gfe-db`.
 .
 ├── README.md
 ├── cfn
-│   └── build-service.yml                       # Deploys the build server and EBS volume
+│   ├── build-service.yml             # Deploys the build server and EBS volume
+│   └── database.yml                  # Deploys Neo4j database                  
 └── img
 ```
 
