@@ -106,10 +106,7 @@ VARIABLE3=<value>
 *Important:* Always use a `.env` file or AWS SSM Parameter Store for sensitive variables like credentials and API keys. Never hard-code them, including when developing. AWS will quarantine an account if any credentials get accidentally exposed and this will cause problems.
 
 ## Usage
-```bash
-# Example usage
-python3 my_script.py
-```
+
 ### Check Userdata Logs
 ```bash
 sudo less /var/log/cloud-init-output.log
@@ -118,18 +115,31 @@ sudo less /var/log/cloud-init-output.log
 ## Running Tests
 
 ## Deployment
-To deploy, run the command.
+To deploy services, run the commands.
 ```bash
+# Deploy the build service
 aws cloudformation deploy \
   --template-file cfn/build-service.yml \
-  --stack-name gfe-db-update-build
+  --stack-name gfe-db-update
+  --capabilities CAPABILITY_NAMED_IAM
+
+# Deploy the database service
+aws cloudformation deploy \
+  --template-file cfn/database.yml \
+  --stack-name gfe-db \
+  --capabilities CAPABILITY_NAMED_IAM
 ```
 
 ## Clean Up
 To delete, run the command.
 ```bash
+# Delete the build service
 aws cloudformation delete-stack \
-  --stack-name gfe-db-update-build
+  --stack-name gfe-db-update
+
+# Delete the database service
+aws cloudformation delete-stack \
+  --stack-name gfe-db
 ```
 
 ## Authors
