@@ -1,11 +1,11 @@
-gfe-db-update-pipeline
+gfe-db-update
 =====================
 
 Infrastructure definition of the data pipeline to update `gfe-db`.
 
 ## Table of Contents
 <!-- Comment out lines to remove them from the TOC. Uncomment them and save the document to update the TOC. -->
-- [gfe-db-update-pipeline](#gfe-db-update-pipeline)
+- [gfe-db-update](#gfe-db-update)
   - [Table of Contents](#table-of-contents)
   - [Project Structure](#project-structure)
   - [Description](#description)
