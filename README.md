@@ -12,6 +12,7 @@ Infrastructure definition of the data pipeline to update `gfe-db`.
     - [Architecture](#architecture)
     - [CloudFormation Templates](#cloudformation-templates)
       - [`build-service.yml`](#build-serviceyml)
+      - [`database.yml`](#databaseyml)
   - [Installation](#installation)
     - [Prerequisites](#prerequisites)
     - [Creating a Python Virtual Environment](#creating-a-python-virtual-environment)
@@ -51,6 +52,9 @@ This service ingests quarterly updates to the IPD-IMGT/HLA database into a data 
 
 #### `build-service.yml`
 Deploys an EC2, EBS volume and security group. The EC2 instance downloads data from https://github.com/ANHIG/IMGTHLA, builds a set of CSVs for the given release, and stores them in S3. A Lambda function destroys the instance and EBS volume when the build is complete.
+
+#### `database.yml`
+Deploys an EC2 instance running Docker for Neo4j.
 
 ## Installation
 
