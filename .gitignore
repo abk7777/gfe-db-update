@@ -319,6 +319,10 @@ $RECYCLE.BIN/
 
 */build/*
 
+# SAM files
+samconfig.toml
+.aws-sam
+
 # End of https://www.gitignore.io/api/osx,linux,python,windows,pycharm,visualstudiocode
 
 # Project files
@@ -336,3 +340,4 @@ nodes-*.txt
 _.*
 # *.yml
 logs.txt
+example-cfn-response.json

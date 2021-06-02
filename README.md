@@ -125,7 +125,7 @@ To deploy services, run the commands.
 # Deploy the build service
 aws cloudformation deploy \
   --template-file cfn/build-service.yml \
-  --stack-name gfe-db-update
+  --stack-name gfe-db-build
   --capabilities CAPABILITY_NAMED_IAM
 
 # Deploy the database service
@@ -140,7 +140,7 @@ To delete, run the command.
 ```bash
 # Delete the build service
 aws cloudformation delete-stack \
-  --stack-name gfe-db-update
+  --stack-name gfe-db-build
 
 # Delete the database service
 aws cloudformation delete-stack \

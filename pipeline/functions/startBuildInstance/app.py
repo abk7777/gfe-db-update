@@ -1,0 +1,149 @@
+import boto3
+
+
+cfn = boto3.client('cloudformation')
+
+def lambda_handler(event, context):
+    """Deploys a CloudFormation stack to start the gfe-db build server
+
+    Parameters
+    ----------
+    event: dict, required
+        Input event to the Lambda function
+
+    context: object, required
+        Lambda Context runtime methods and attributes
+
+    Returns
+    ------
+        dict: Object containing a success/fail response for stack creation
+    """
+
+    response = cfn.create_stack(
+        StackName='gfe-db-build',
+        TemplateBody=cfn_template,
+        TimeoutInMinutes=60,
+        Capabilities=[
+            'CAPABILITY_NAMED_IAM',
+        ],
+        OnFailure='DELETE'
+    )
+
+    return {
+        "response": response
+        }
+        
+
+cfn_template = """AWSTemplateFormatVersion: 2010-09-09
+Description: Build service for GFE database
+Parameters:
+  gfedbBuildKeyName:
+    Type: String
+    Default: gfe-build-service
+    Description: Key pair name for the GFE build server instance.
+    NoEcho: true
+  gfedbBuildImageId:
+    Type: String
+    Default: ami-0d5eff06f840b45e9
+  gfeVPC:
+    Type: String
+    Default: vpc-8a3d74f0
+  # gfedbRepo:
+  #   Type: String
+  #   Default: https://github.com/abk7777/gfe-db.git
+  gfeBucketArn:
+    Type: String
+    Default: "arn:aws:s3:::gfe-db-4498"
+Resources:
+  gfedbBuildSG:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupName: gfedb-build-server-sg
+      GroupDescription: Security group for the GFE DB build server
+      VpcId: !Ref gfeVPC
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          FromPort: 22
+          IpProtocol: tcp
+          ToPort: 22
+  gfedbBuildServer:
+    Type: AWS::EC2::Instance
+    Properties:
+      KeyName: !Ref gfedbBuildKeyName
+      DisableApiTermination: false
+      ImageId: !Ref gfedbBuildImageId
+      InstanceType: c5d.large
+      IamInstanceProfile: !Ref gfedbBuildProfile
+      Monitoring: true
+      SecurityGroupIds:
+        - !Ref gfedbBuildSG
+      UserData:
+        Fn::Base64: |
+          #!/bin/bash -x
+          IDX=1
+          for DEV in /dev/disk/by-id/nvme-Amazon_EC2_NVMe_Instance_Storage_*-ns-1; do
+            mkfs.xfs ${DEV}
+            mkdir -p /local${IDX}
+            echo ${DEV} /local${IDX} xfs defaults,noatime 1 2 >> /etc/fstab
+            IDX=$((${IDX} + 1))
+          done
+          mount -a
+          sudo yum update -y
+          sudo amazon-linux-extras install python3.8
+          sudo yum install git -y
+          cd /local1
+          chown -R ec2-user .
+          git clone https://github.com/abk7777/gfe-db.git
+          cd gfe-db
+          git checkout fix/optimize-build 
+          python3.8 -m venv .venv
+          source .venv/bin/activate
+          pip install -U pip
+          pip install -r requirements.txt
+          export RELEASES="3420, 3430"
+          export ALIGN=True
+          export KIR=False
+          export MEM_PROFILE=False
+          bash bin/build.sh 100
+      Tags:
+        - Key: Name
+          Value: gfedb-build
+  gfedbBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - "sts:AssumeRole"
+      Path: /
+      Policies:
+        - PolicyName: gfedbS3Write
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "s3:ListObjects"
+                  - "s3:PutObject"
+                  - "s3:PutObjectAcl"
+                Resource: 
+                  - !Ref gfeBucketArn
+                  - !Join
+                    - ""
+                    - - !Ref gfeBucketArn
+                      - "/data/*/csv/*"
+  gfedbBuildProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref gfedbBuildRole
+Outputs:
+  gfedbBuildServerPublicDNS:
+    Description: Public DNS for SSH access into the build server
+    Value: !GetAtt gfedbBuildServer.PublicDnsName
+"""
