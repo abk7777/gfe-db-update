@@ -3,28 +3,14 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   Update pipeline for gfe-db
 Resources:
-  gfedbUpdatePipelineStateMachine:
-    Type: AWS::Serverless::StateMachine # More info about State Machine Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html
+  startBuildTopic:
+    Type: AWS::SNS::Topic
     Properties:
-      Name: gfe-db-update-pipeline
-      DefinitionUri: statemachine/pipeline.asl.json
-      # Role: arn:aws:iam::531868584498:role/StepFunctionsLambdaRole
-      # DefinitionSubstitutions:
-      #   startBuildInstanceFunctionArn: !GetAtt startBuildInstanceFunction.Arn
-      #   stopBuildInstanceFunctionArn: !GetAtt stopBuildInstanceFunction.Arn
-      #   loadGFEdbFunctionArn: !GetAtt loadGFEdbFunction.Arn
-      Events:
-        SNSEvent:
-          Type: SNS
-          Properties:
-            Topic: !Ref gfeDBBuildStackTopic
-      Policies: # Find out more about SAM policy templates: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
-        - LambdaInvokePolicy:
-            FunctionName: !Ref startBuildInstanceFunction
-      #   - LambdaInvokePolicy:
-      #       FunctionName: !Ref stopBuildInstanceFunction
-      #   - LambdaInvokePolicy:
-      #       FunctionName: !Ref loadGFEdbFunction
+      TopicName: "gfe-db-start-build"
+  loadGFEdbTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: "gfe-db-load-database"
   startBuildInstanceFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
     Properties:
@@ -32,6 +18,16 @@ Resources:
       Handler: app.lambda_handler
       Runtime: python3.8
       Timeout: 60
+      Events:
+        Type: SNS
+        Properties:
+          Topic: !Ref loadGFEdbTopic
+
+### build and deploy
+### publish to startBuild to trigger build
+### add lines to build script to publish to loadGFE when finished with build
+###
+      
   # stopBuildInstanceFunction:
   #   Type: AWS::Serverless::Function
   #   Properties:
@@ -44,13 +40,6 @@ Resources:
   #     CodeUri: functions/loadGFEdb/
   #     Handler: app.lambda_handler
   #     Runtime: python3.8
-
-    gfeDBBuildStackSubscription:
-      Type: AWS::SNS::Subscription
-      Properties:
-        Endpoint: !Ref
-        Protocol: lambda
-        TopicArn: !Ref gfeDBBuildStackTopic
 Outputs:
   # StockTradingStateMachineHourlyTradingSchedule is an implicit Schedule event rule created out of Events key under Serverless::StateMachine
   # Find out more about other implicit resources you can reference within SAM
