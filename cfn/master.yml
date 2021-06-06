@@ -1,0 +1,64 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Reddit data mining service
+Parameters:
+  AppName:
+    Type: String
+    Default: 'gfe-db'
+  BuildServiceCFN:
+    Type: String
+    Default: 'build-service.yml'
+  DatabaseCFN:
+    Type: String
+    Default: database.yml
+Resources:
+  BuildServiceStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Join 
+        - '/'
+        - - !Sub 'https://s3.${AWS::Region}.amazonaws.com'
+          - Fn::ImportValue: 
+              !Sub '${AppName}-config-bucket-name' # templates bucket name
+          - !Sub '${AppName}/version_${AppVersion}/${BuildServiceCFN}' # object key
+      Parameters:
+        AppName: !Ref AppName
+        AppVersion: !Ref AppVersion
+      Tags: 
+        - Key: AppName
+          Value: !Ref AppName
+        - Key: AppVersion
+          Value: !Ref AppVersion
+  DatabaseStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Join 
+        - '/'
+        - - !Sub 'https://s3.${AWS::Region}.amazonaws.com'
+          - Fn::ImportValue: 
+              !Sub '${AppName}-config-bucket-name' # templates bucket name
+          - !Sub '${AppName}/version_${AppVersion}/${DatabaseCFN}' # object key
+      Parameters:
+        AppName: !Ref AppName
+        AppVersion: !Ref AppVersion
+        # DataBucketName: 
+        #   Fn::GetAtt: 
+        #     - DataPipelineStack
+        #     - Outputs.DataBucketName  
+        # DataBucketArn: 
+        #   Fn::GetAtt: 
+        #     - DataPipelineStack
+        #     - Outputs.DataBucketArn
+        # GlueScriptsBucketName: 
+        #   Fn::GetAtt: 
+        #     - DataPipelineStack
+        #     - Outputs.GlueScriptsBucketName
+        # GlueScriptsBucketArn: 
+        #   Fn::GetAtt: 
+        #     - DataPipelineStack
+        #     - Outputs.GlueScriptsBucketArn
+      Tags: # combine all app tags into one ie., stage-appname-version-region ( or !Ref stack name)
+        - Key: AppName
+          Value: !Ref AppName
+        - Key: AppVersion
+          Value: !Ref AppVersion
+  

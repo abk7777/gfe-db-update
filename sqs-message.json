@@ -1,0 +1,10 @@
+{
+  "Messages": [
+    {
+      "MessageId": "f9b05b4a-ae96-4a58-b5e3-c0b6c5655437",
+      "ReceiptHandle": "AQEBpxstJB9HrrXidUYW+4+jNm7vHa7XlvOzOnL/luz3byDFI4vGKR4suHJ4YITuGln8j6b/kVuhDrQvFww2DO/5O5tqt5bjZyDt94t3tRCc5NVJ+9EQFDjNcyX9+M2dEnpU1HBpZgtr8Qh4NvjbmvMiG2PzdnL1YaHl4c2AwMd0JEHQ41pGV2zXFTedbhmrIvzL7I2EiXTmaLfvblmma+dNS6d9j8F2b8twO8pUyDsVe4f8v8e8aqkKcA2WC+iZPdPH9vZcZoa4Ym6bevKq9vBZO3o3IsIpGDiF8eJy/o6lqn733wCgFX+q3sxVc93ZeRIl32bP64lKTj/yolPoA6vAcI+H+Wm5vL7n+0WLKSKn6u4kl4yVncHio22W7ANnA2yk",
+      "MD5OfBody": "6a411e5a58b72c6ba3416c8b25fe4798",
+      "Body": "{\"release\": 3240}"
+    }
+  ]
+}
