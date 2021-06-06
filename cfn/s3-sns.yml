@@ -4,9 +4,6 @@ Parameters:
   AppName:
     Type: String
     Default: gfe-db
-  gfedbBucketName:
-    Type: String
-    Default: 'gfe-db'
 Resources: 
   gfedbBuildTopic:
     Type: AWS::SNS::Topic
@@ -28,21 +25,39 @@ Resources:
           Resource: !Ref gfedbBuildTopic
           Condition:
             ArnLike:
-              aws:SourceArn: !Sub 'arn:${AWS::Partition}:s3:::${gfedbBucketName}-${AWS::AccountId}'
+              aws:SourceArn: !Sub 'arn:${AWS::Partition}:s3:::${AppName}-${AWS::AccountId}'
       Topics:
         - !Ref gfedbBuildTopic
   gfedbBuildQueue:
     Type: AWS::SQS::Queue
+    Properties:
+      QueueName: !Sub '${AppName}-build-queue'
+  gfedbBuildQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: sns.amazonaws.com
+            Action:
+              - sqs:SendMessage
+            Resource: !GetAtt gfedbBuildQueue.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Ref gfedbBuildTopic
+      Queues:
+      - !Ref gfedbBuildQueue
   loadGFEdbTopic:
     Type: AWS::SNS::Topic
     Properties:
-      TopicName: !Sub '${AppName}-load-database'
+      TopicName: !Sub '${AppName}-load-database-topic'
   gfedbBucket:
     Type: AWS::S3::Bucket
     DependsOn:
       - gfedbBuildTopicPolicy
     Properties:
-      BucketName: !Sub '${gfedbBucketName}-${AWS::AccountId}'
+      BucketName: !Sub '${AppName}-${AWS::AccountId}'
       NotificationConfiguration:
         TopicConfigurations:
           - Event: 's3:ObjectCreated:Put'
