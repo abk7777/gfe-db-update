@@ -3,14 +3,26 @@ Transform: AWS::Serverless-2016-10-31
 Description: >
   Update pipeline for gfe-db
 Resources:
-  startBuildTopic:
-    Type: AWS::SNS::Topic
-    Properties:
-      TopicName: "gfe-db-start-build"
-  loadGFEdbTopic:
-    Type: AWS::SNS::Topic
-    Properties:
-      TopicName: "gfe-db-load-database"
+  startBuildInstanceRole:
+    Type: AWS::IAM::Role
+    Properties: 
+      AssumeRolePolicyDocument: 
+        Version: "2012-10-17"
+        Statement: 
+          - 
+            Effect: "Allow"
+            Principal: 
+              Service: 
+                - "lambda.amazonaws.com"
+            Action: 
+              - "sts:AssumeRole"
+      Policies:
+        PolicyName: startBuildInstancePolicy
+        PolicyDocument:
+          - 
+
+
+
   startBuildInstanceFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
     Properties:
@@ -19,13 +31,15 @@ Resources:
       Runtime: python3.8
       Timeout: 60
       Events:
-        Type: SNS
-        Properties:
-          Topic: !Ref loadGFEdbTopic
+        startBuildEvent:
+          Type: SNS
+          Properties:
+            Topic: !Ref startBuildTopic
+
 
 ### build and deploy
 ### publish to startBuild to trigger build
-### add lines to build script to publish to loadGFE when finished with build
+### add lines to build script to publish to stopBuildInstance when finished with build
 ###
       
   # stopBuildInstanceFunction:
@@ -40,13 +54,4 @@ Resources:
   #     CodeUri: functions/loadGFEdb/
   #     Handler: app.lambda_handler
   #     Runtime: python3.8
-Outputs:
-  # StockTradingStateMachineHourlyTradingSchedule is an implicit Schedule event rule created out of Events key under Serverless::StateMachine
-  # Find out more about other implicit resources you can reference within SAM
-  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification-generated-resources.html
-  gfedbUpdatePipelineStateMachineArn:
-    Description: "gfe-db update pipeline ARN"
-    Value: !Ref gfedbUpdatePipelineStateMachine
-  # gfedbUpdatePipelineStateMachineRoleArn:
-  #   Description: "IAM Role created for Stock Trading State machine based on the specified SAM Policy Templates"
-  #   Value: !GetAtt gfedbUpdatePipelineStateMachineRole.Arn
+

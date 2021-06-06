@@ -341,3 +341,4 @@ _.*
 # *.yml
 logs.txt
 example-cfn-response.json
+stopBuildInstance/

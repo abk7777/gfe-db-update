@@ -35,6 +35,7 @@ Resources:
     Properties:
       KeyName: !Ref gfedbBuildKeyName
       DisableApiTermination: false
+      InstanceInitiatedShutdownBehavior: stop
       ImageId: !Ref gfedbBuildImageId
       InstanceType: c5d.large
       IamInstanceProfile: !Ref gfedbBuildProfile
@@ -64,11 +65,11 @@ Resources:
           source .venv/bin/activate
           pip install -U pip
           pip install -r requirements.txt
-          export RELEASES="3420, 3430"
-          export ALIGN=True
-          export KIR=False
-          export MEM_PROFILE=False
-          bash bin/build.sh 100
+          # TO DO: add script to boot protocol
+          # - check SQS for release version
+          # - if release version, run build for release
+          # - if no release version, check until timeout and shutdown
+
       Tags:
         - Key: Name
           Value: gfedb-build
