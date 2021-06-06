@@ -33,10 +33,10 @@ Resources:
         - !Ref gfedbBuildTopic
   gfedbBuildQueue:
     Type: AWS::SQS::Queue
-  # loadGFEdbTopic:
-  #   Type: AWS::SNS::Topic
-  #   Properties:
-  #     TopicName: "gfe-db-load-database"
+  loadGFEdbTopic:
+    Type: AWS::SNS::Topic
+    Properties:
+      TopicName: !Sub '${AppName}-load-database'
   gfedbBucket:
     Type: AWS::S3::Bucket
     DependsOn:
@@ -85,3 +85,13 @@ Outputs:
     Value: !GetAtt gfedbBuildQueue.Arn
     Export:
       Name: !Sub '${AppName}-build-queue-arn'
+  loadGFEdbTopicName:
+    Description: "SNS topic for loading gfe-db"
+    Value: !GetAtt loadGFEdbTopic.TopicName
+    Export:
+      Name: !Sub '${AppName}-load-topic-name'
+  loadGFEdbTopicArn:
+    Description: "SNS topic ARN for loading gfe-db"
+    Value: !Ref loadGFEdbTopic
+    Export:
+      Name: !Sub '${AppName}-load-topic-arn'
