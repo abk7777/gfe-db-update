@@ -58,18 +58,8 @@ Resources:
           sudo yum install git -y
           cd /local1
           chown -R ec2-user .
-          git clone https://github.com/abk7777/gfe-db.git
-          cd gfe-db
-          git checkout fix/optimize-build 
-          python3.8 -m venv .venv
-          source .venv/bin/activate
-          pip install -U pip
-          pip install -r requirements.txt
-          # TO DO: add script to boot protocol
-          # - check SQS for release version
-          # - if release version, run build for release
-          # - if no release version, check until timeout and shutdown
-
+          export SQS_BUILD_QUEUE_URL='https://sqs.us-east-1.amazonaws.com/531868584498/gfe-db-build-queue'
+          # /local1/gfe-db/bin/get_release.sh
       Tags:
         - Key: Name
           Value: gfedb-build

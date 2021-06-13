@@ -1,10 +1,10 @@
 {
   "Messages": [
     {
-      "MessageId": "f9b05b4a-ae96-4a58-b5e3-c0b6c5655437",
-      "ReceiptHandle": "AQEBpxstJB9HrrXidUYW+4+jNm7vHa7XlvOzOnL/luz3byDFI4vGKR4suHJ4YITuGln8j6b/kVuhDrQvFww2DO/5O5tqt5bjZyDt94t3tRCc5NVJ+9EQFDjNcyX9+M2dEnpU1HBpZgtr8Qh4NvjbmvMiG2PzdnL1YaHl4c2AwMd0JEHQ41pGV2zXFTedbhmrIvzL7I2EiXTmaLfvblmma+dNS6d9j8F2b8twO8pUyDsVe4f8v8e8aqkKcA2WC+iZPdPH9vZcZoa4Ym6bevKq9vBZO3o3IsIpGDiF8eJy/o6lqn733wCgFX+q3sxVc93ZeRIl32bP64lKTj/yolPoA6vAcI+H+Wm5vL7n+0WLKSKn6u4kl4yVncHio22W7ANnA2yk",
-      "MD5OfBody": "6a411e5a58b72c6ba3416c8b25fe4798",
-      "Body": "{\"release\": 3240}"
+      "MessageId": "19d60064-bcc6-44e6-b494-2bdf984b96c9",
+      "ReceiptHandle": "AQEB96t9SQMoaClH3wLhxDlcGOsS2fqdTcdE7txzej1KhLDPmuhqMeljwD3A2nWcyFCkehkU1/py9wK8+lxuTTUAE00f7bg7LcosEYnW2dpta9XKTeA/teIfqQAWdEKWuhKl5W/i0yJnyFmNPzU4FkmSvaMRTHH9JWQJh7ybpZtCo10mxLhEi1tEGBgHGHqYcDAO6iWEJEl86S/jDC/iqengmshon+RtBpPHEAp6F5MbPlzgiCZ7ltuwTNfwMJP3/JpgrZbUtkhObHkJxHyAP1HZyhV7uft+Op6Lhde5HtqnBYEPft2AT6ppLyr1k0xoD3x/hkqNM/EAJ5Q8hSldep9vl99EFpYTLPhekT+wHxzZcnATFTsQitZbsJLwI4GelQCH",
+      "MD5OfBody": "d92e179308d746ab7fed6532ebf0d78e",
+      "Body": "{\"release\": 3240, \"align\": \"True\", \"kir\": \"False\", \"mem_profile\": \"True\"}"
     }
   ]
 }

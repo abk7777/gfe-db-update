@@ -125,7 +125,7 @@ To deploy services, run the commands.
 # Deploy the build service
 aws cloudformation deploy \
   --template-file cfn/build-service.yml \
-  --stack-name gfe-db-build
+  --stack-name gfe-db-build \
   --capabilities CAPABILITY_NAMED_IAM
 
 # Deploy the database service
